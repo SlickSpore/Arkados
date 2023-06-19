@@ -1,5 +1,6 @@
 {
     "files.associations": {
-        "SSG.C": "cpp"
+        "SSG.C": "cpp",
+        "UNISTD.H": "cpp"
     }
 }

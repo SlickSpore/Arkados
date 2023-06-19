@@ -289,6 +289,12 @@ class PPM2VGA:
                     break        
             reso_buf = "".join(res_buf).split(" ")
 
+            for i, e in enumerate(res_buf): 
+                try:
+                    int(e)
+                except:
+                    del res_buf[i]
+
             self.reso = [int(reso_buf[0]),int(reso_buf[1])]
 
             for i in range(len(p_bytes)-2):
@@ -323,9 +329,9 @@ class PPM2VGA:
             self.VGA_INDEXED.append(CVT_TABLE_VGA[str(i)])
         
         with open(o_path,"wb") as f:
-            f.write(self.reso[0].to_bytes(2,'big'))
-            f.write(self.reso[1].to_bytes(2,'big'))
-
+            f.write(self.reso[0].to_bytes(4,'little'))
+            f.write(self.reso[1].to_bytes(4,'little'))
+            f.write((len(self.VGA_INDEXED)+12).to_bytes(4,'little'))
             for i in self.VGA_INDEXED:
                 f.write(i.to_bytes(1,'big'))
 
