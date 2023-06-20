@@ -1,4 +1,4 @@
-#include "ssg.h"
+
 /*
 	(S)lick (S)pore (G)raphics
 
@@ -12,6 +12,67 @@
 
   Rev 3.0 watcom
 */
+#define ENTRY 0
+#define VGA_SEGMENT 0xA0000L
+#define VGA_256_CLR 0x13
+#define VGA_TXT     0x03
+#define X_SIZE      320
+#define Y_SIZE      200
+#define VTRACE      0x03da
+#define VTCODE      0x08
+
+#define PIT_CHANNEL_0 0x40       // PIT Channel 0 I/O port
+#define PIT_COMMAND 0x43         // PIT Command I/O port
+#define PIT_FREQUENCY 1193182    // PIT frequency in Hz
+
+
+typedef struct {
+    int x;
+    int y;
+}point_t;
+
+enum
+{
+  BLACK  =  0,
+  BLUE   =  1,
+  GREEN  =  2,
+  CYAN   =  3,
+  RED    =  4,
+  MGNTA  =  5,
+  BROWN  =  6,
+  LGRAY  =  7,
+  DGRAY  =  8,
+  LBLUE  =  9,
+  LGREEN = 10,
+  LCYAN  = 11,
+  LRED   = 12,
+  LMGNTA = 13,
+  YELLOW = 14,
+  WHITE  = 15
+};
+
+typedef unsigned char uint8_t;
+
+volatile int TRIGGER = 0;
+
+typedef struct {  //IMPLEMENT CORRECT DOUBLE BUFFER!
+  uint8_t buffer_0;
+  uint8_t buffer_1;
+} buffer_t;
+
+typedef struct {
+  uint32_t reso_x;
+  uint32_t reso_y;
+  uint32_t f_size;
+} ssgHeader_t;
+
+typedef struct {
+  uint32_t reso_X;
+  uint32_t reso_Y;
+  uint8_t  *img_data;
+} ssgSprite_t;
+
+
 
 void interrupt do_FRAME_TICK() {
   // Increment the timer tick count
@@ -50,7 +111,7 @@ void set_gfxMode(uint8_t mode){
     int 0x10
   }
 }
-void set_bgrColor(uint8_t clr, uint8_t *frame_buffer){
+void set_clrFill(int clr, uint8_t *frame_buffer){
   memset(frame_buffer,clr,X_SIZE*Y_SIZE);
 }
 
@@ -66,7 +127,18 @@ void set_Pixel(int x, int y, uint8_t clr, uint8_t *frame_buffer){
   *(frame_buffer + (y*X_SIZE+x)) = clr;
 }
 
-void draw_Sprite(point_t p, int x_dim, int y_dim, uint8_t *sprite, uint8_t *frame_buffer){
+void draw_Sprite(point_t p, ssgSprite_t s, uint8_t *frame_buffer){
+  int i, j, k = 0;
+
+  for (i = 0; i < s.reso_Y; i++){
+    for (j = 0; j < s.reso_X; j++){
+      set_Pixel(j+p.x,i+p.y,s.img_data[k], frame_buffer);
+      k++;
+    }
+  }
+}
+
+void old_draw_Sprite(point_t p, int x_dim, int y_dim, uint8_t *sprite, uint8_t *frame_buffer){
   int i, j, k = 0;
 
   for (i = 0; i < y_dim; i++){
@@ -94,3 +166,16 @@ void draw_Square(point_t p, point_t p1, uint8_t clr, uint8_t *frame_buffer){
   }
 
 }
+
+uint8_t *gen_Frame(){
+  uint8_t *f;
+  f = malloc(X_SIZE*Y_SIZE);
+  if (f){
+    set_clrFill(BLACK,f);
+    return f;
+  }
+  else{
+    printf("[ERROR!] Failed to Alloc Frame Buffer!");
+    return NULL;
+  }
+};

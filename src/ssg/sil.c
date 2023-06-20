@@ -1,11 +1,7 @@
-typedef struct {
-  uint32_t reso_x;
-  uint32_t reso_y;
-  uint32_t f_size;
-} ssgHeader_t;
 
-uint8_t *read_ssg_asset(char path[512]){
+ssgSprite_t read_ssg_asset(char path[512]){
   ssgHeader_t header;
+  ssgSprite_t  image;
   FILE *fp;
   uint8_t *data;
   int fd,f_size,header_end = sizeof(ssgHeader_t);
@@ -15,7 +11,7 @@ uint8_t *read_ssg_asset(char path[512]){
   fp = fopen(path,"rb");
   if (!fp){
     printf("[ERROR!] File '%s%s' not found!\n",path);
-    return NULL;
+    return image;
   }
   
   fread(&header,sizeof(ssgHeader_t),1,fp);
@@ -25,6 +21,12 @@ uint8_t *read_ssg_asset(char path[512]){
   fseek(fp,header_end,SEEK_SET);
   fread(data,sizeof(uint8_t),header.f_size-header_end,fp);
   
-  return data;
+  fclose(fp);
+
+  image.reso_X = header.reso_x;
+  image.reso_Y = header.reso_y;
+  image.img_data = data;
+
+  return image;
 
 }

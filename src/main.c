@@ -3,16 +3,24 @@
 #include <stdlib.h>
 #include <memory.h>
 #include <conio.h>
+#include <string.h>
 #include <dos.h>
-#include <sys/stat.h>
 #include "ssg\ssg.c"
 #include "ssg\sil.c"
-
+#include "game\game.c"
 
 void main(){
-  char ASSET[] = ".\\assets\\ssg\\btile.ssg";
-  char *data;
 
-  data = read_ssg_asset(ASSET);
-  printf("%d",data[1]);
+  uint8_t *FRAME = gen_Frame();
+  //background init...
+  draw_backGround(FRAME);
+
+  set_gfxMode(VGA_256_CLR);
+
+  write_Buffer(FRAME);
+
+  getch();
+
+  set_gfxMode(VGA_TXT);
+
 }
