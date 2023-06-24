@@ -11,7 +11,7 @@
 #include "game\game.c"
 
 #define __MAIN__
-#define FPS_LIMIT 50
+#define FPS_LIMIT 40  //it is not the actual frame rate fking PIT!
 
 void main(){
   
@@ -19,7 +19,11 @@ void main(){
   ssgSprite_t PADDLE = read_ssg_asset(ASSETS[2]);
   ssgSprite_t WTILE = read_ssg_asset(ASSETS[0]);
   ssgSprite_t BACKGROUND = read_ssg_asset(ASSETS[1]);
+  ssgSprite_t BLOCKS[4];
   point_t PAD_POS;
+
+
+  load_Blocks(&BLOCKS);
 
   PAD_POS.x = ((X_SIZE/4)*2)-(PADDLE.reso_X/2); 
   PAD_POS.y = Y_SIZE - 20;
@@ -35,7 +39,7 @@ void main(){
     move_Paddle(&PAD_POS,PADDLE);
     draw_backGround(BACKGROUND,WTILE,&FRAME);
     draw_playerPaddle(PADDLE,PAD_POS,&FRAME);
-
+    draw_Blocks(BLOCKS,&FRAME);
     check_Quit();
   }
 

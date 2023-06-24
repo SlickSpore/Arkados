@@ -11,7 +11,11 @@
 char ASSETS[50][250] = {
   "./assets/ssg/WTILE.SSG",
   "./assets/ssg/FTILE.SSG",
-  "./assets/ssg/PTILE.ssg"
+  "./assets/ssg/PTILE.ssg",
+  "./assets/ssg/BBLK.ssg",
+  "./assets/ssg/RBLK.ssg",
+  "./assets/ssg/GBLK.ssg",
+  "./assets/ssg/PBLK.ssg"
 };
 
 
@@ -80,6 +84,35 @@ void check_Pause(int *run){
   }
 }
 
+void draw_Blocks(ssgSprite_t blocks[4],buffer_t *FRAME){
+  int i,j,k;
+
+  #define BNO 10
+  #define PAD 5
+
+  point_t b_p;
+
+  b_p.x = 80;
+  b_p.y = 40;
+  for (k = 0; k < 2; k++){
+    for (j = 0; j < 4; j++){
+      for (i = 0; i < BNO; i++){
+        draw_Sprite(b_p, &blocks[j], FRAME->buffer_pointer);
+        b_p.x += blocks[0].reso_X;
+      }
+      b_p.y+=blocks[0].reso_Y + 1;
+      b_p.x = 80;
+    }
+  }
+}
+
+void load_Blocks(ssgSprite_t *blocks){
+  int i;
+  for (i = 0; i < 4; i++){
+    blocks[i] = read_ssg_asset(ASSETS[3+i]);
+  }
+}
+
 /*THis function checks for quit interrupt.*/
 void check_Quit(){
   if (get_character()==ESC){
@@ -92,7 +125,14 @@ void check_Quit(){
 void paddle_inBounds(point_t *p_pos, int delta, ssgSprite_t paddle){
   if (p_pos->x+delta>=80&&p_pos->x+delta<=X_SIZE-80-paddle.reso_X){
     p_pos->x += delta;
+  }else if (delta < 0){
+    p_pos->x = 80;
+  }else if (delta > 0)
+  {
+    p_pos->x = X_SIZE-80-paddle.reso_X;
   }
+  
+      
   else{;}
 }
 
