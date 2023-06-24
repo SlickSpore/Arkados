@@ -60,12 +60,14 @@ typedef struct {  //IMPLEMENT CORRECT DOUBLE BUFFER!
   uint8_t buffer_1;
 } buffer_t;
 
+/*This is the format for a .ssg header file.*/
 typedef struct {
   uint32_t reso_x;
   uint32_t reso_y;
   uint32_t f_size;
 } ssgHeader_t;
 
+/*This is the type of a .ssg image.*/
 typedef struct {
   uint32_t reso_X;
   uint32_t reso_Y;
@@ -73,7 +75,7 @@ typedef struct {
 } ssgSprite_t;
 
 
-
+/*This function is the PIT interrupt*/
 void interrupt do_FRAME_TICK() {
   // Increment the timer tick count
   TRIGGER = 1;
@@ -81,6 +83,7 @@ void interrupt do_FRAME_TICK() {
   outp(0x20, 0x20);
 }
 
+/*This Function sets the PIT fps Limit.*/
 void set_FPS_LIMIT(int FPS) {
   uint16_t divisor = PIT_FREQUENCY / FPS;
 
@@ -91,6 +94,8 @@ void set_FPS_LIMIT(int FPS) {
   outp(PIT_CHANNEL_0, (uint8_t)(divisor & 0xFF));
   outp(PIT_CHANNEL_0, (uint8_t)(divisor >> 8));
 }
+
+/*This Funtion starts the pit.*/
 void start_FPS_COUNT(){
   _dos_setvect(0x08, do_FRAME_TICK);
 
@@ -99,11 +104,13 @@ void start_FPS_COUNT(){
   }
 }
 
+/*This Function waits for the pit interrupt*/
 void wait_FRAME_DONE(){
   TRIGGER = 0;
   while(!TRIGGER){_asm{NOP};}
 }
 
+/*This function sets the video mode*/
 void set_gfxMode(uint8_t mode){
   _asm{
     mov ah, 0x00
