@@ -12,6 +12,8 @@
 
   Rev 3.0 watcom
 */
+
+
 #define ENTRY 0
 #define VGA_SEGMENT 0xA0000L
 #define VGA_256_CLR 0x13
@@ -52,12 +54,15 @@ enum
 };
 
 typedef unsigned char uint8_t;
-
+typedef uint8_t frame_t;
+uint8_t *VGA   = (uint8_t*)VGA_SEGMENT;
 volatile int TRIGGER = 0;
 
 typedef struct {  //IMPLEMENT CORRECT DOUBLE BUFFER!
-  uint8_t buffer_0;
-  uint8_t buffer_1;
+  frame_t *buffer_0;
+  frame_t *buffer_1;
+  frame_t *buffer_pointer;
+  int bsel;
 } buffer_t;
 
 /*This is the format for a .ssg header file.*/
@@ -122,21 +127,41 @@ void set_clrFill(int clr, uint8_t *frame_buffer){
   memset(frame_buffer,clr,X_SIZE*Y_SIZE);
 }
 
-void write_Buffer(uint8_t *frame_buffer){
-  uint8_t *VGA   = (uint8_t*)VGA_SEGMENT;
+void write_Buffer(buffer_t *frame_buffer){
+  if (frame_buffer->bsel){
+    frame_buffer->buffer_pointer = frame_buffer->buffer_0;
+    frame_buffer->bsel = 0;
+  }
+  else{
+    frame_buffer->buffer_pointer = frame_buffer->buffer_1;
+    frame_buffer->bsel = 1;
+  }
   while((inp(VTRACE)&VTCODE)==VTCODE);
   while((inp(VTRACE)&VTCODE)==0x00);
-  memcpy(VGA,frame_buffer,X_SIZE*Y_SIZE);
+  memcpy(VGA,frame_buffer->buffer_pointer,X_SIZE*Y_SIZE);
   TRIGGER = 0;
+  
 }
 
 void set_Pixel(int x, int y, uint8_t clr, uint8_t *frame_buffer){
   *(frame_buffer + (y*X_SIZE+x)) = clr;
 }
 
-void draw_Sprite(point_t p, ssgSprite_t s, uint8_t *frame_buffer){
+void set_Line(int sx, int sy, int lenght, frame_t *sprite,  frame_t *frame_buffer){
+  memcpy(frame_buffer + (sy*X_SIZE+sx), sprite,lenght*sizeof(frame_t));
+}
+
+void draw_Sprite(point_t p, ssgSprite_t *s, uint8_t *frame_buffer){
   int i, j, k = 0;
 
+  for (i = 0; i < s->reso_Y; i++){
+    set_Line(p.x,p.y+i,s->reso_X,s->img_data+i*s->reso_X,frame_buffer);
+  }
+
+}
+
+void old_draw_Sprite(point_t p, ssgSprite_t s, uint8_t *frame_buffer){
+  int i, j, k = 0;
   for (i = 0; i < s.reso_Y; i++){
     for (j = 0; j < s.reso_X; j++){
       set_Pixel(j+p.x,i+p.y,s.img_data[k], frame_buffer);
@@ -145,16 +170,6 @@ void draw_Sprite(point_t p, ssgSprite_t s, uint8_t *frame_buffer){
   }
 }
 
-void old_draw_Sprite(point_t p, int x_dim, int y_dim, uint8_t *sprite, uint8_t *frame_buffer){
-  int i, j, k = 0;
-
-  for (i = 0; i < y_dim; i++){
-    for (j = 0; j < x_dim; j++){
-      set_Pixel(j+p.x,i+p.y,sprite[k], frame_buffer);
-      k++;
-    }
-  }
-}
 
 void draw_Square(point_t p, point_t p1, uint8_t clr, uint8_t *frame_buffer){
   uint8_t i, j;
@@ -174,7 +189,7 @@ void draw_Square(point_t p, point_t p1, uint8_t clr, uint8_t *frame_buffer){
 
 }
 
-uint8_t *gen_Frame(){
+uint8_t *old_gen_Frame(){
   uint8_t *f;
   f = malloc(X_SIZE*Y_SIZE);
   if (f){
@@ -185,4 +200,21 @@ uint8_t *gen_Frame(){
     printf("[ERROR!] Failed to Alloc Frame Buffer!");
     return NULL;
   }
+};
+
+buffer_t gen_Frame(){
+  buffer_t b;
+
+  b.buffer_0 = malloc(X_SIZE*Y_SIZE);
+  b.buffer_1 = malloc(X_SIZE*Y_SIZE);
+  b.buffer_pointer = b.buffer_0;
+  b.bsel = 0;
+
+  if (!b.buffer_0 ||!b.buffer_1){
+    printf("[ERROR!] Failed to Alloc Frame Buffer!");
+    exit(-1);
+  }
+  set_clrFill(BLACK,b.buffer_0);
+  set_clrFill(BLACK,b.buffer_1);
+  return b;
 };

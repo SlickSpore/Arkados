@@ -16,11 +16,11 @@ char ASSETS[50][250] = {
 
 
 /*This Function draws in an optimized way the background on the current buffer.*/
-void draw_backGround(ssgSprite_t FTILE, ssgSprite_t WTILE, uint8_t *FRAME){
+void draw_backGround(ssgSprite_t FTILE, ssgSprite_t WTILE, buffer_t *FRAME){
   int i, j;
   point_t FTL1_POS;
   point_t FTL2_POS;
-  set_clrFill(BLACK,FRAME);
+  set_clrFill(BLACK,FRAME->buffer_pointer);
 
   //fillers
   FTL1_POS.x = 0;
@@ -30,8 +30,8 @@ void draw_backGround(ssgSprite_t FTILE, ssgSprite_t WTILE, uint8_t *FRAME){
 
   for (i = 0; i < 4; i ++){
     for (j = 0; j < 10; j ++){
-        draw_Sprite(FTL1_POS,FTILE,FRAME);
-        draw_Sprite(FTL2_POS,FTILE,FRAME);
+        draw_Sprite(FTL1_POS,&FTILE,FRAME->buffer_pointer);
+        draw_Sprite(FTL2_POS,&FTILE,FRAME->buffer_pointer);
         FTL2_POS.y += 20;
         FTL1_POS.y += 20;
     }
@@ -48,17 +48,17 @@ void draw_backGround(ssgSprite_t FTILE, ssgSprite_t WTILE, uint8_t *FRAME){
   FTL2_POS.y = 0; 
 
   for (i = 0; i < Y_SIZE / 20; i++){
-    draw_Sprite(FTL1_POS,WTILE,FRAME);
+    draw_Sprite(FTL1_POS,&WTILE,FRAME->buffer_pointer);
     FTL1_POS.y += WTILE.reso_Y;
-    draw_Sprite(FTL2_POS,WTILE,FRAME);
+    draw_Sprite(FTL2_POS,&WTILE,FRAME->buffer_pointer);
     FTL2_POS.y += WTILE.reso_Y;
   }
 
 }
 
 /*This function draws on the screen the player's paddle.*/
-void draw_playerPaddle(ssgSprite_t paddle, point_t pos, uint8_t *FRAME){
-  draw_Sprite(pos,paddle,FRAME);
+void draw_playerPaddle(ssgSprite_t paddle, point_t pos, buffer_t *FRAME){
+  draw_Sprite(pos,&paddle,FRAME->buffer_pointer);
 }
 
 /*This is the function that checks weather
