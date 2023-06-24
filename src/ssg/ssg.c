@@ -33,7 +33,7 @@ typedef struct {
     int y;
 }point_t;
 
-enum
+enum 
 {
   BLACK  =  0,
   BLUE   =  1,
@@ -123,7 +123,7 @@ void set_gfxMode(uint8_t mode){
     int 0x10
   }
 }
-void set_clrFill(int clr, uint8_t *frame_buffer){
+void set_clrFill(int clr, frame_t *frame_buffer){
   memset(frame_buffer,clr,X_SIZE*Y_SIZE);
 }
 
@@ -143,7 +143,7 @@ void write_Buffer(buffer_t *frame_buffer){
   
 }
 
-void set_Pixel(int x, int y, uint8_t clr, uint8_t *frame_buffer){
+void set_Pixel(int x, int y, uint8_t clr, frame_t *frame_buffer){
   *(frame_buffer + (y*X_SIZE+x)) = clr;
 }
 
@@ -151,7 +151,7 @@ void set_Line(int sx, int sy, int lenght, frame_t *sprite,  frame_t *frame_buffe
   memcpy(frame_buffer + (sy*X_SIZE+sx), sprite,lenght*sizeof(frame_t));
 }
 
-void draw_Sprite(point_t p, ssgSprite_t *s, uint8_t *frame_buffer){
+void draw_Sprite(point_t p, ssgSprite_t *s, frame_t *frame_buffer){
   int i, j, k = 0;
 
   for (i = 0; i < s->reso_Y; i++){
@@ -160,18 +160,9 @@ void draw_Sprite(point_t p, ssgSprite_t *s, uint8_t *frame_buffer){
 
 }
 
-void old_draw_Sprite(point_t p, ssgSprite_t s, uint8_t *frame_buffer){
-  int i, j, k = 0;
-  for (i = 0; i < s.reso_Y; i++){
-    for (j = 0; j < s.reso_X; j++){
-      set_Pixel(j+p.x,i+p.y,s.img_data[k], frame_buffer);
-      k++;
-    }
-  }
-}
 
 
-void draw_Square(point_t p, point_t p1, uint8_t clr, uint8_t *frame_buffer){
+void draw_Square(point_t p, point_t p1, uint8_t clr, frame_t *frame_buffer){
   uint8_t i, j;
   int endx, endy;
   if (p1.x >= p.x){
@@ -188,19 +179,6 @@ void draw_Square(point_t p, point_t p1, uint8_t clr, uint8_t *frame_buffer){
   }
 
 }
-
-uint8_t *old_gen_Frame(){
-  uint8_t *f;
-  f = malloc(X_SIZE*Y_SIZE);
-  if (f){
-    set_clrFill(BLACK,f);
-    return f;
-  }
-  else{
-    printf("[ERROR!] Failed to Alloc Frame Buffer!");
-    return NULL;
-  }
-};
 
 buffer_t gen_Frame(){
   buffer_t b;
