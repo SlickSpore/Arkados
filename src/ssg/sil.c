@@ -18,9 +18,12 @@ ssgSprite_t read_ssg_asset(char path[512]){
   printf("[Info] Image: X SIZE: %d; Y SIZE: %d; FILE SIZE: %d\n",header.reso_x,header.reso_y,header.f_size);
   
   data = malloc(header.f_size);
+  if (!data){
+    printf("[ERROR!] Not enough Memory for Images!\n");
+    exit(-1);
+  }
   fseek(fp,header_end,SEEK_SET);
   fread(data,sizeof(uint8_t),header.f_size-header_end,fp);
-  
   fclose(fp);
 
   image.reso_X = header.reso_x;
