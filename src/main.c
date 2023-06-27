@@ -1,18 +1,7 @@
-#include <stdio.h>
-#include <stdint.h>
-#include <stdlib.h>
-#include <memory.h>
-#include <conio.h>
-#include <string.h>
-#include <dos.h>
-#include <time.h>
-#include <math.h>
-#include "ssg\ssg.c"
-#include "ssg\pki.c"
-#include "ssg\sil.c"
-#include "game\game.c"
 
 #define __MAIN__
+
+#include "game\game.h"
 #define FPS_LIMIT 40  //it is not the actual frame rate fking PIT!
 
 void main(){
@@ -25,10 +14,14 @@ void main(){
   block_t *BLOCKS;
   point_t PAD_POS;
   ball_t BALL;
+  int run = 1;
+
+  ssgSprite_t bskin = read_ssg_asset(ASSETS[7]);
+
 
   /* Game Init */
   BLOCKS = load_Blocks();
-  BALL   = init_Ball();
+  BALL   = init_Ball(bskin);
 
   PAD_POS.x = ((X_SIZE/4)*2)-(PADDLE.reso_X/2); 
   PAD_POS.y = Y_SIZE - 20;
@@ -38,7 +31,7 @@ void main(){
   set_FPS_LIMIT(FPS_LIMIT);
   start_FPS_COUNT();
 
-  while(1){
+  while(run){
 
     /* 0) ***    Draw and swap Buffers    *** */
     write_Buffer(&FRAME);
@@ -46,6 +39,11 @@ void main(){
     
     /* 1) ***    Player Logic             *** */
     move_Paddle(&PAD_POS,PADDLE);
+    run = move_Ball(&BALL);
+    if (!run){
+      run = check_Resume();
+      BALL = init_Ball(bskin);
+    }
 
     /* 2) ***    Game Scene Draw          *** */
     draw_backGround(BACKGROUND,WTILE,&FRAME);
@@ -57,7 +55,7 @@ void main(){
     check_Quit();
   }
 
-  getch();
   set_gfxMode(VGA_TXT);
+  printf("Glad You've played ArkaDOS!\nSee ya...:)\n");
 
 }

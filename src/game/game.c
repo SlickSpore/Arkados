@@ -1,25 +1,4 @@
-//cool header...
 
-#ifndef ENTRY  //for vs autocomplete
-#include "ssg/ssg.c"
-#include "ssg/sil.c"
-#include "ssg/pki.c"
-#endif
-
-#define PSPEED 10;
-#define BNO 10
-
-
-char ASSETS[50][250] = {
-  "./assets/ssg/WTILE.SSG",
-  "./assets/ssg/FTILE.SSG",
-  "./assets/ssg/PTILE.ssg",
-  "./assets/ssg/BBLK.ssg",
-  "./assets/ssg/RBLK.ssg",
-  "./assets/ssg/GBLK.ssg",
-  "./assets/ssg/PBLK.ssg",
-  "./assets/ssg/BTILE.ssg"
-};
 
 typedef struct {
   int destroyed;

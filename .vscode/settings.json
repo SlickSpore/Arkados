@@ -2,6 +2,7 @@
     "files.associations": {
         "SSG.C": "cpp",
         "UNISTD.H": "cpp",
-        "stdint.h": "c"
+        "stdint.h": "c",
+        "game.h": "c"
     }
 }
