@@ -12,6 +12,7 @@ void draw_Ball(ball_t ball, buffer_t *FRAME){
 /*This function initializes the ball variables if called*/
 ball_t init_Ball(ssgSprite_t skin){
   ball_t ball;
+  int angles[] = {225,240,270,300,315};
 
   srand(time(0));
   ball.bskin = skin;
@@ -19,9 +20,8 @@ ball_t init_Ball(ssgSprite_t skin){
   ball.bpos.y = Y_SIZE - 20 - (ball.bskin.reso_Y);
   ball.bpos.x = (X_SIZE / 2) - (ball.bskin.reso_X / 2);
 
-  //ball.angle_d = rand()%36;
-
-  ball.angle_d = 250;
+  ball.angle_d = angles[rand()%5];
+  // ball.angle_d = 250;
 
   return ball;
 
@@ -50,6 +50,7 @@ int move_Ball(ball_t *ball){
     ball->bpos.y = 0;
     ball->angle_d = 360 - ball->angle_d;
   }else if(ball->bpos.y + y_change >= Y_SIZE - ball->bskin.reso_Y){ //player has lost a ball!!
+    ball->bpos.y = Y_SIZE;
     return 0;
   }else{
     ball->bpos.y += y_change;

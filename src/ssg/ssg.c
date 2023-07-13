@@ -160,8 +160,6 @@ void draw_Sprite(point_t p, ssgSprite_t *s, frame_t *frame_buffer){
 
 }
 
-
-
 void draw_Square(point_t p, point_t p1, uint8_t clr, frame_t *frame_buffer){
   uint8_t i, j;
   int endx, endy;

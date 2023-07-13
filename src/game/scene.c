@@ -42,14 +42,14 @@ void draw_backGround(ssgSprite_t FTILE, ssgSprite_t WTILE, buffer_t *FRAME){
 
 }
 
-/*THis function checks for quit interrupt.*/
-void check_Quit(){
+/*This function checks for quit interrupt.*/
+int check_Quit(){
   if (get_character()==ESC){
     set_gfxMode(VGA_TXT);
     nosound();
-    printf("Glad You've played ArkaDOS!\nSee ya...:)\n");
-    exit(0);
+    return 0;
   }
+  return 1;
 }
 int check_Resume(){
 
@@ -59,7 +59,7 @@ int check_Resume(){
     switch(keyCode){
       case ESC:
         set_gfxMode(VGA_TXT);
-        exit(0);        
+        return 0;        
       case KD_SP:
         keyCode = get_character();
         while(keyCode!=KR_SP){keyCode = get_character();if (keyCode == ESC){return 0;}}
